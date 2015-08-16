@@ -1403,6 +1403,7 @@ function on_mouse_lbtn_up(x, y) {
                             var move_delta = dragndrop.drop_id - new_drag_pos;
                         };
                         
+                        plman.UndoBackup(p.list.playlist);
                         plman.MovePlaylistSelection(p.list.playlist, move_delta);
                         
                     }; else {
@@ -1410,6 +1411,7 @@ function on_mouse_lbtn_up(x, y) {
                         // 1st: move selected item at the full end of the playlist to make then contigus
                         g_avoid_on_item_focus_change = true;
                         g_avoid_on_playlist_items_reordered = true;
+                        plman.UndoBackup(p.list.playlist);
                         plman.MovePlaylistSelection(p.list.playlist, plman.PlaylistItemCount(p.list.playlist));
                         // 2nd: move bottom selection to new drop_id place (to redefine first...)
                         plman.SetPlaylistFocusItemByHandle(p.list.playlist, drop_handle);
@@ -2345,6 +2347,7 @@ function on_key_down(vkey) {
                     break;
                 case VK_DELETE:
                     if(!fb.IsAutoPlaylist(act_pls)) {
+                        plman.UndoBackup(act_pls);
                         if(isQueuePlaylistActive()) {
                             var affected_items = Array();
                             var first_focus_id = null;
@@ -2443,6 +2446,7 @@ function on_key_down(vkey) {
                         };
                         if(vkey==88) { // CTRL+X
                             if(!fb.IsAutoPlaylist(act_pls)) {
+                                plman.UndoBackup(act_pls);
                                 clipboard.selection = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 
                                 if(isQueuePlaylistActive()) {
@@ -2480,6 +2484,7 @@ function on_key_down(vkey) {
                             if(clipboard.selection) {
                                 if(clipboard.selection.Count>0) {
                                     try {
+                                        plman.UndoBackup(plman.ActivePlaylist);
                                         if(p.list.count > 0) {
                                             plman.InsertPlaylistItems(plman.ActivePlaylist, p.list.focusedTrackId + 1, clipboard.selection);
                                         }; else {
@@ -2537,6 +2542,12 @@ function on_key_down(vkey) {
                             //
                             resize_panels();
                             full_repaint();
+                        };
+                        if(vkey == 89) { // CTRL + Y
+                            fb.RunMainMenuCommand("Edit/Redo");
+                        };
+                        if(vkey == 90) { // CTRL + Z
+                            fb.RunMainMenuCommand("Edit/Undo");
                         };
                         break;
                     case KMask.alt:
@@ -3578,6 +3589,7 @@ function on_drag_drop(action, x, y, mask) {
         }; else {
             if(g_dragndrop_bottom) {
                 plman.ClearPlaylistSelection(plman.ActivePlaylist);
+                plman.UndoBackup(plman.ActivePlaylist);
                 action.ToPlaylist();
                 action.Playlist = plman.ActivePlaylist;
                 action.ToSelect = true;
@@ -3596,6 +3608,7 @@ function on_drag_drop(action, x, y, mask) {
                 g_avoid_on_playlist_items_reordered = true;
             
                 plman.ClearPlaylistSelection(plman.ActivePlaylist);
+                plman.UndoBackup(plman.ActivePlaylist);
                 action.ToPlaylist();
                 action.Playlist = plman.ActivePlaylist;;
                 action.ToSelect = true;
@@ -3621,6 +3634,7 @@ function on_drag_drop(action, x, y, mask) {
         var drop_done = false;
         if(p.playlistManager.hoverId > -1 && p.playlistManager.hoverId < p.playlistManager.playlists.length && !p.playlistManager.playlists[p.playlistManager.hoverId].isAutoPlaylist && !p.playlistManager.playlists[p.playlistManager.hoverId].isReservedPlaylist) {
             drop_done = true;
+            plman.UndoBackup(g_dragndrop_targetPlaylistId);
             action.ToPlaylist();
             action.Playlist = g_dragndrop_targetPlaylistId;
             action.ToSelect = true;

@@ -2582,9 +2582,11 @@ oList = function(object_name, playlist) {
         }; else {
             switch (true) {
             case (ret==1010):
+                plman.UndoBackup(this.playlist);
                 plman.RemovePlaylistSelection(this.playlist, true);
                 break;
             case (ret==1011):
+                plman.UndoBackup(this.playlist);
                 plman.RemovePlaylistSelection(this.playlist, false);
                 break;
             case (ret==4000):
@@ -2593,18 +2595,19 @@ oList = function(object_name, playlist) {
                 break;
             case (ret>2000 && ret <4000):
                 var insert_index = plman.PlaylistItemCount(ret-2001);
+                plman.UndoBackup(ret - 2001);
                 plman.InsertPlaylistItems((ret-2001), insert_index, this.metadblist_selection, false);
                 if(cPlaylistManager.visible) full_repaint();
                 break;
             case (ret>4000 && ret <6000):
-                var insert_index = 0;
-                var pl_name = plman.GetPlaylistName(ret-4001);
-                g_avoid_on_playlists_changed = true;
-                plman.RemovePlaylist(ret-4001);
-                plman.CreatePlaylist(ret-4001, pl_name);
-                g_avoid_on_playlists_changed = false;
-                plman.InsertPlaylistItems((ret-4001), insert_index, this.metadblist_selection, false);
-                if(cPlaylistManager.visible) full_repaint();
+                plman.ActivePlaylist = ret - 4001;
+                plman.UndoBackup(plman.ActivePlaylist);
+                fb.ClearPlaylist();
+                plman.InsertPlaylistItems(plman.ActivePlaylist, 0, this.metadblist_selection, false);
+                plman.SetPlaylistSelectionSingle(plman.ActivePlaylist, 0, true);
+                plman.ExecutePlaylistDefaultAction(plman.ActivePlaylist, 0);
+                if (cPlaylistManager.visible)
+                     full_repaint();
                 break;
             };
         };

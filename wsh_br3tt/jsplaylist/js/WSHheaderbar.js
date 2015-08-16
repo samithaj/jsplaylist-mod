@@ -600,6 +600,7 @@ oHeaderBar = function() {
                                     this.columnDragged = 3;
                                     this.columnDragged_saved = 3;
                                     cHeaderBar.sortRequested = true;
+                                    plman.UndoBackup(plman.ActivePlaylist);
                                     if(this.columns[this.columnDraggedId].sortOrder != "null") {
                                         plman.SortByFormatV2(plman.ActivePlaylist, this.columns[this.columnDraggedId].sortOrder, this.sortedColumnDirection);
                                     }; else {

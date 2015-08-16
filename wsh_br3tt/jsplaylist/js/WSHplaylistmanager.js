@@ -597,6 +597,7 @@ oPlaylistManager = function(obj_name) {
                         // drop possible only if not an autoplaylist and not the active playlist as target
                         if(this.hoverId > -1 && this.hoverId < this.playlists.length && !this.playlists[this.hoverId].isAutoPlaylist && !this.playlists[this.hoverId].isReservedPlaylist && this.playlists[this.hoverId].idx != plman.ActivePlaylist) {
                             drop_done = true;
+                            plman.UndoBackup(this.playlists[this.hoverId].idx);
                             plman.InsertPlaylistItems(this.playlists[this.hoverId].idx, plman.PlaylistItemCount(this.playlists[this.hoverId].idx), p.list.metadblist_selection, false);
                         }; else if(this.ishoverHeader) {
                             drop_done = true;
